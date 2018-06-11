@@ -11,7 +11,7 @@
 根据这个帖子 https://bbs.pediy.com/thread-222652.htm 手动获取解密数据库的步骤如下
 
 1. 打开微信，先不要登陆
-2. OD 附加，搜索字符串 "DBFactory::encryptDB"
+2. OD 附加，切换到 WeChatWin.dll 模块，搜索字符串 "DBFactory::encryptDB"
 3. 往下有个 `test edx, edx`，在哪里下断，edx 就指向 key，长度 32
 
 嘛~ 具体怎么跟没搞清楚~
