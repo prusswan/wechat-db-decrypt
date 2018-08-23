@@ -158,6 +158,10 @@ while True:
         sleep(1)
         continue
 
+    cur.execute("ATTACH DATABASE 'decrypted_win.db' AS db KEY '';");
+    cur.execute("SELECT sqlcipher_export('db');" )
+    cur.execute("DETACH DATABASE db;" )
+
     msg = cur.execute("select type, CreateTime, IsSender, strTalker, strContent from ChatCRMsg where localId > ?", (max_seq,))
     for type_id, create_time, is_sender, talker, content in msg:
         if type_id == 49:
