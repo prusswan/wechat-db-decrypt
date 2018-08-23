@@ -37,3 +37,10 @@ def get_password(path, key):
 ](https://github.com/CovenantEyes/sqlcipher-windows)
 
 最后 CheatEngine 得到 wxid 地址，读注册表找到聊天记录路径，全部结合起来可以是个间谍软件 /_\
+
+## Anaconda setup
+
+* Prepare 32-bit python env: https://stackoverflow.com/questions/33709391/using-multiple-python-engines-32bit-64bit-and-2-7-3-5
+* Install pywin32 binary: https://www.lfd.uci.edu/~gohlke/pythonlibs/#pywin32
+* Install pysqlcipher3 egg: `python -m easy_install pysqlcipher3.egg`
+* Install other packages: `conda install wcwidth prettytable tabulate  beautifulsoup4 -e conda-forge`
