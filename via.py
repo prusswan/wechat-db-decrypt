@@ -51,16 +51,19 @@ ReadProcessMemory(process.handle, module+0xFEDBD8, byref(wechat_id_addr), 4, Non
 wechat_id = create_string_buffer(21)
 ReadProcessMemory(process.handle, wechat_id_addr, byref(wechat_id), 21, None)
 db_path = os.path.join(get_file_save_path(),
-'WeChat Files', wechat_id.value.decode(), 'Msg')
+'WeChat Files', 'ko__ww', 'Msg')
+#'WeChat Files', wechat_id.value.decode(), 'Msg')
 chat_msg_path = os.path.join(db_path, 'ChatMsg.db')
 micro_msg_path = os.path.join(db_path, 'MicroMsg.db')
 
 key_addr = c_int32()
-ReadProcessMemory(process.handle, module+0xFF899C, byref(key_addr), 4, None)
+#ReadProcessMemory(process.handle, module+0xFF899C, byref(key_addr), 4, None)
+ReadProcessMemory(process.handle, module+0x10BD1E4, byref(key_addr), 4, None)
 key = create_string_buffer(32)
 ReadProcessMemory(process.handle, key_addr, byref(key), 32, None)
 
 def get_password(path, key):
+    print("key",binascii.hexlify(key))
     salt = open(path, 'rb').read(16)
     dk=hashlib.pbkdf2_hmac('sha1', key, salt, 64000, dklen=32)
     return binascii.hexlify(dk).decode()
