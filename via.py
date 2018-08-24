@@ -42,25 +42,36 @@ def get_file_save_path():
     value, _ = QueryValueEx(key, "FileSavePath")
     return value if value != 'MyDocument:' else get_mydoc_path()
 
-pid = get_pid('wechat.exe')
+#pid = get_pid('wechat.exe')
+pid = get_pid('wechatstore.exe')
 process = OpenProcess(PROCESS_ALL_ACCESS, False, pid)
 module = get_module(process, 'wechatwin.dll')
 
 wechat_id_addr = c_int32()
-ReadProcessMemory(process.handle, module+0xFEDBD8, byref(wechat_id_addr), 4, None)
+#ReadProcessMemory(process.handle, module+0xFEDBD8, byref(wechat_id_addr), 4, None)
+ReadProcessMemory(process.handle, module+0xFF9C08, byref(wechat_id_addr), 4, None)
 wechat_id = create_string_buffer(21)
-ReadProcessMemory(process.handle, wechat_id_addr, byref(wechat_id), 21, None)
+#ReadProcessMemory(process.handle, wechat_id_addr, byref(wechat_id), 21, None)
+ReadProcessMemory(process.handle, module+0xFF9C08, byref(wechat_id), 21, None)
 db_path = os.path.join(get_file_save_path(),
-'WeChat Files', wechat_id.value.decode(), 'Msg')
-chat_msg_path = os.path.join(db_path, 'ChatMsg.db')
-micro_msg_path = os.path.join(db_path, 'MicroMsg.db')
+#'WeChat Files', wechat_id.value.decode(), 'Msg')
+'WeChat Files', '__', 'Msg')
+
+store_path = r"C:\\Users\\__\\AppData\\Local\\Packages\\TencentWeChatLimited.forWindows10_sdtnhv12zgd7a\\LocalCache\\Roaming\\Tencent\\WeChatAppStore\\WeChatAppStore Files\\__\\Msg"
+#chat_msg_path = os.path.join(db_path, 'ChatMsg.db')
+chat_msg_path = os.path.join(store_path, 'ChatMsg.db')
+#micro_msg_path = os.path.join(db_path, 'MicroMsg.db')
+micro_msg_path = os.path.join(store_path, 'MicroMsg.db')
 
 key_addr = c_int32()
-ReadProcessMemory(process.handle, module+0xFF899C, byref(key_addr), 4, None)
+#ReadProcessMemory(process.handle, module+0xFF899C, byref(key_addr), 4, None)
+ReadProcessMemory(process.handle, module+0x0104F42C, byref(key_addr), 4, None)
 key = create_string_buffer(32)
 ReadProcessMemory(process.handle, key_addr, byref(key), 32, None)
 
 def get_password(path, key):
+    print("key", binascii.hexlify(key))
+    print("path", path)
     salt = open(path, 'rb').read(16)
     dk=hashlib.pbkdf2_hmac('sha1', key, salt, 64000, dklen=32)
     return binascii.hexlify(dk).decode()
@@ -154,6 +165,10 @@ while True:
     if max_seq >= seq:
         sleep(1)
         continue
+
+    cur.execute("ATTACH DATABASE 'decrypted_winstore.db' AS db KEY '';");
+    cur.execute("SELECT sqlcipher_export('db');" )
+    cur.execute("DETACH DATABASE db;" )
 
     msg = cur.execute("select type, CreateTime, IsSender, strTalker, strContent from ChatCRMsg where localId > ?", (max_seq,))
     for type_id, create_time, is_sender, talker, content in msg:
